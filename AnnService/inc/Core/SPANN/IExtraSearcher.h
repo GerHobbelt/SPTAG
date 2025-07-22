@@ -128,6 +128,7 @@ namespace SPTAG {
                     m_decompressBuffer.ReservePageBuffer(p_maxPages);
                 }
                 m_spaceID = g_spaceCount++;
+                m_relaxedMono = false;
             }
 
             void Initialize(va_list& arg) {
@@ -178,6 +179,16 @@ namespace SPTAG {
 
             int m_spaceID;
 
+            uint32_t m_pi;
+
+            int m_offset;
+
+            bool m_loadPosting;
+
+            bool m_relaxedMono;
+
+            int m_loadedPostingNum;
+
             static std::atomic_int g_spaceCount;
         };
 
@@ -201,11 +212,23 @@ namespace SPTAG {
                 std::set<int>* truth = nullptr,
                 std::map<int, std::set<int>>* found = nullptr) = 0;
 
+            virtual bool SearchIterativeNext(ExtraWorkSpace* p_exWorkSpace,
+                QueryResult& p_queryResults,
+                std::shared_ptr<VectorIndex> p_index) = 0;
+
+            virtual void SearchIndexWithoutParsing(ExtraWorkSpace* p_exWorkSpace) = 0;
+
+            virtual bool SearchNextInPosting(ExtraWorkSpace* p_exWorkSpace,
+                QueryResult& p_queryResults,
+		std::shared_ptr<VectorIndex>& p_index) = 0;
+
             virtual bool BuildIndex(std::shared_ptr<Helper::VectorSetReader>& p_reader, 
                 std::shared_ptr<VectorIndex> p_index, 
                 Options& p_opt) = 0;
 
             virtual bool CheckValidPosting(SizeType postingID) = 0;
+
+            virtual ErrorCode GetPostingDebug(ExtraWorkSpace* p_exWorkSpace, std::shared_ptr<VectorIndex> p_index, SizeType vid, std::vector<SizeType>& VIDs, std::shared_ptr<VectorSet>& vecs) = 0;
         };
     } // SPANN
 } // SPTAG
