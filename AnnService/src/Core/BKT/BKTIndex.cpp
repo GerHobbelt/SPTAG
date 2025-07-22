@@ -240,16 +240,17 @@ namespace SPTAG
                     {
                         const COMMON::BKTNode& tnode = m_pTrees[-2 - checkNode];
                         SizeType i = -tnode.childStart;
-                        do 
+                        do
                         {
                             if (notDeleted(m_deletedID, tmpNode))
                             {
                                 if (checkFilter(m_pMetadata, tmpNode, filterFunc))
                                 {
-                                    if (isDup(p_query, tmpNode, gnode.distance)) 
+                                    if (isDup(p_query, tmpNode, gnode.distance))
                                         break;
                                 }
                             }
+                            if (i <= 0) break;
                             tmpNode = m_pTrees[i].centerid;
                         } while (i++ < tnode.childEnd);
                     }
@@ -280,7 +281,7 @@ namespace SPTAG
                     SizeType nn_index = node[i];
                     if (nn_index < 0) 
                         break;
-                    IF_DEBUG(if (nn_index >= m_pSamples.R()) throw std::out_of_range(); )
+                    IF_DEBUG(if (nn_index >= m_pSamples.R()) throw std::out_of_range("VID: "s + std::string(nn_index) + ", Samples: "s + std::string(m_pSamples.R())); )
                     //IF_NDEBUG(if (nn_index >= m_pSamples.R()) continue; )
                     if (p_space.CheckAndSet(nn_index)) continue;
                     float distance2leaf = m_fComputeDistance(p_query.GetQuantizedTarget(), (m_pSamples)[nn_index], GetFeatureDim());
@@ -321,7 +322,7 @@ namespace SPTAG
             bool NeverDup(COMMON::QueryResultSet<T>& query, SizeType node, float score)
             {
                 query.AddPoint(node, score);
-                return false;
+                return true;
             }
 
             bool CheckFilter(const std::shared_ptr<MetadataSet>& metadata, SizeType node, std::function<bool(const ByteArray&)> filterFunc)
