@@ -89,8 +89,8 @@ namespace SPTAG {
     }
 #else
     void listdir(std::string path, std::vector<std::string>& files) {
-        WIN32_FIND_DATA fd;
-        HANDLE hFile = FindFirstFile(path.c_str(), &fd);
+        WIN32_FIND_DATAA fd;
+        HANDLE hFile = FindFirstFileA(path.c_str(), &fd);
         if (hFile != INVALID_HANDLE_VALUE) {
              do {
                  std::string tmp = path.substr(0, path.length() - 1);
@@ -103,7 +103,7 @@ namespace SPTAG {
                 else {
                     files.push_back(tmp);
                 }
-            } while (FindNextFile(hFile, &fd));
+            } while (FindNextFileA(hFile, &fd));
             FindClose(hFile);
         }
     }

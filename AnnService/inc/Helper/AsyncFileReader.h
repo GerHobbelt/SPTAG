@@ -151,7 +151,7 @@ namespace SPTAG
                 std::uint32_t maxWriteRetries = 2,
                 std::uint16_t threadPoolSize = 4)
             {
-                m_fileHandle.Reset(::CreateFile(filePath,
+                m_fileHandle.Reset(::CreateFileA(filePath,
                     GENERIC_READ,
                     FILE_SHARE_READ,
                     NULL,
@@ -184,7 +184,7 @@ namespace SPTAG
                 col.Offset = (offset & 0xffffffff);
                 col.OffsetHigh = (offset >> 32);
                 col.m_data = nullptr;
-                col.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+                col.hEvent = CreateEventA(NULL, TRUE, FALSE, NULL);
                 if (!::ReadFile(m_fileHandle.GetHandle(),
                     buffer,
                     static_cast<DWORD>(readSize),
@@ -305,15 +305,15 @@ namespace SPTAG
             static uint64_t GetSectorSize(const char* p_filePath)
             {
                 DWORD dwSectorSize = 0;
-                LPTSTR lpFilePart;
+                LPSTR lpFilePart;
                 // Get file sector size
-                DWORD dwSize = GetFullPathName(p_filePath, 0, NULL, &lpFilePart);
+                DWORD dwSize = GetFullPathNameA(p_filePath, 0, NULL, &lpFilePart);
                 if (dwSize > 0)
                 {
-                    LPTSTR lpBuffer = new TCHAR[dwSize];
+                    LPSTR lpBuffer = new char[dwSize];
                     if (lpBuffer)
                     {
-                        DWORD dwResult = GetFullPathName(p_filePath, dwSize, lpBuffer, &lpFilePart);
+                        DWORD dwResult = GetFullPathNameA(p_filePath, dwSize, lpBuffer, &lpFilePart);
                         if (dwResult > 0 && dwResult <= dwSize)
                         {
                             bool nameValid = false;
@@ -352,7 +352,7 @@ namespace SPTAG
                             if (nameValid)
                             {
                                 DWORD dwSPC, dwNOFC, dwTNOC;
-                                GetDiskFreeSpace(lpBuffer, &dwSPC, &dwSectorSize, &dwNOFC, &dwTNOC);
+                                GetDiskFreeSpaceA(lpBuffer, &dwSPC, &dwSectorSize, &dwNOFC, &dwTNOC);
                             }
                         }
                         delete[] lpBuffer;
@@ -367,14 +367,14 @@ namespace SPTAG
                 LPVOID lpMsgBuf;
                 DWORD dw = GetLastError();
 
-                FormatMessage(
+                FormatMessageA(
                     FORMAT_MESSAGE_ALLOCATE_BUFFER |
                     FORMAT_MESSAGE_FROM_SYSTEM |
                     FORMAT_MESSAGE_IGNORE_INSERTS,
                     NULL,
                     dw,
                     0,
-                    (LPTSTR)&lpMsgBuf,
+                    (LPSTR)&lpMsgBuf,
                     0, NULL);
 
                 // Display the error message and exit the process
